@@ -9,7 +9,8 @@ app.use(express.json());
 app.use(cookieParser())
 
 app.use(cors({
-   origin: 'http://localhost:5174',
+   // origin: 'http://localhost:5174',
+   origin: 'https://worklink-frontend-2hr4.onrender.com'
    credentials: true
 }))
 
