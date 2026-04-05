@@ -22,6 +22,7 @@ import AdminDisputeDetailPage from "./views/pages/admin/AdminDisputeDetailPage.j
 import AdminAdsPage from "./views/pages/admin/AdminAdsPage.jsx";
 import SharedProfilePage from "./views/pages/SharedProfilePage.jsx";
 import NotFoundPage from "./views/pages/NotFoundPage.jsx";
+import PublicRoute from "./views/components/PublicRoute.jsx";
 
 function AppEntryRedirect() {
   const { user } = useAppController();
@@ -44,11 +45,36 @@ function AppEntryRedirect() {
 export default function App() {
   return (
     <Routes>
+
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Route>
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LandingPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        /></Route>
+
+
 
       <Route
         path="/app"
@@ -59,6 +85,7 @@ export default function App() {
         }
       >
         <Route index element={<AppEntryRedirect />} />
+
         <Route path="profile" element={<SharedProfilePage />} />
 
         <Route path="customer/dashboard" element={<CustomerDashboardPage />} />
@@ -78,6 +105,8 @@ export default function App() {
         <Route path="admin/disputes" element={<AdminDisputesPage />} />
         <Route path="admin/disputes/:disputeId" element={<AdminDisputeDetailPage />} />
         <Route path="admin/ads" element={<AdminAdsPage />} />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
