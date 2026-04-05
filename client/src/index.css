@@ -1,0 +1,288 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  color-scheme: dark;
+  --ink-strong: #f6efe4;
+  --ink-soft: #ebe4d8;
+  --ink-muted: #cfc6b7;
+  --line-soft: rgba(255, 255, 255, 0.08);
+  --line-warm: rgba(201, 171, 111, 0.24);
+  --surface-deep: #090b10;
+  --surface-mid: #121620;
+  --surface-soft: rgba(18, 22, 32, 0.78);
+  --surface-raised: rgba(22, 28, 40, 0.92);
+  --accent: #c4a874;
+  --accent-strong: #e8c98b;
+  --accent-soft: rgba(196, 168, 116, 0.16);
+  --danger-soft: rgba(248, 113, 113, 0.16);
+  --success-soft: rgba(74, 222, 128, 0.14);
+  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.36);
+  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 18px 48px rgba(0, 0, 0, 0.34);
+}
+
+:root,
+[data-theme="business"] {
+  --color-base-100: oklch(0.97 0.01 85);
+  --color-base-200: oklch(0.93 0.01 85);
+  --color-base-300: oklch(0.87 0.01 85);
+  --color-base-content: oklch(0.95 0.01 85);
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(196, 168, 116, 0.14), transparent 26%),
+    radial-gradient(circle at top right, rgba(107, 122, 191, 0.16), transparent 22%),
+    linear-gradient(180deg, #090b10 0%, #0b0e14 24%, #111620 100%);
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+p,
+span,
+label,
+li,
+td,
+th,
+input,
+textarea,
+select {
+  color: var(--ink-soft);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.display-font {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.ambient-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 90%);
+  pointer-events: none;
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(24, 29, 40, 0.76), rgba(13, 17, 25, 0.88));
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(20px);
+}
+
+.panel-warm {
+  background:
+    linear-gradient(180deg, rgba(28, 24, 18, 0.76), rgba(14, 14, 18, 0.9)),
+    rgba(14, 18, 28, 0.8);
+  border: 1px solid var(--line-warm);
+  box-shadow: var(--shadow-soft);
+}
+
+.hero-veil {
+  background:
+    linear-gradient(145deg, rgba(196, 168, 116, 0.14), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 56%),
+    rgba(8, 10, 15, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.k-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.4rem;
+  background: linear-gradient(135deg, #d6b982, #a78247);
+  color: #111319;
+  box-shadow: 0 12px 30px rgba(196, 168, 116, 0.22);
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.k-btn:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.k-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  border-radius: 999px;
+  padding: 0.8rem 1.3rem;
+  border: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.k-btn-ghost:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.k-input,
+.k-select,
+.k-textarea {
+  width: 100%;
+  border-radius: 1rem;
+  border: 0;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  color: var(--ink-strong);
+  padding: 0.9rem 1rem;
+}
+
+.k-input::placeholder,
+.k-textarea::placeholder {
+  color: rgba(235, 228, 216, 0.5);
+}
+
+.k-textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.section-label {
+  color: var(--accent-strong);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.status-chip {
+  @apply badge rounded-full border-0 px-3 py-3;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink-soft);
+}
+
+.metric-tile {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-tile::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -65% auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(196, 168, 116, 0.22), transparent 70%);
+}
+
+.page-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.surface-divider {
+  border-top: 1px solid var(--line-soft);
+}
+
+.floating-blur {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.floating-blur.one {
+  width: 18rem;
+  height: 18rem;
+  left: -4rem;
+  top: 8rem;
+  background: rgba(196, 168, 116, 0.16);
+}
+
+.floating-blur.two {
+  width: 22rem;
+  height: 22rem;
+  right: -6rem;
+  top: 4rem;
+  background: rgba(95, 117, 205, 0.16);
+}
+
+.floating-blur.three {
+  width: 16rem;
+  height: 16rem;
+  right: 12%;
+  bottom: 8%;
+  background: rgba(80, 178, 157, 0.12);
+}
+
+.table-shell {
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.table-shell table {
+  color: var(--ink-soft);
+}
+
+.table-shell thead {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+}
+
+.link-accent {
+  color: var(--accent-strong);
+}
+
+.link-accent:hover {
+  color: #f2d8aa;
+}
