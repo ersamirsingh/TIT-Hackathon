@@ -21,6 +21,8 @@ const walletTransactionSchema = new mongoose.Schema(
                 "upi_recharge",
                 "rocket_mode_bonus",
                 "manual_adjustment",
+                "security_deposit_refund",
+                "security_deposit_payout",
             ],
             required: true,
         },

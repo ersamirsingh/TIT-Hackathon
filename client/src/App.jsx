@@ -3,25 +3,33 @@ import { useAppController } from "./controllers/AppController.jsx";
 import ProtectedRoute from "./views/components/ProtectedRoute.jsx";
 import PublicLayout from "./views/layouts/PublicLayout.jsx";
 import DashboardLayout from "./views/layouts/DashboardLayout.jsx";
-import LandingPage from "./views/pages/LandingPage.jsx";
-import LoginPage from "./views/pages/LoginPage.jsx";
-import RegisterPage from "./views/pages/RegisterPage.jsx";
-import CustomerDashboardPage from "./views/pages/customer/CustomerDashboardPage.jsx";
-import CreateJobPage from "./views/pages/customer/CreateJobPage.jsx";
-import JobDetailPage from "./views/pages/customer/JobDetailPage.jsx";
-import WorkerFeedPage from "./views/pages/worker/WorkerFeedPage.jsx";
-import WorkerProfilePage from "./views/pages/worker/WorkerProfilePage.jsx";
-import WalletPage from "./views/pages/worker/WalletPage.jsx";
-import AdminOverviewPage from "./views/pages/admin/AdminOverviewPage.jsx";
-import AdminUsersPage from "./views/pages/admin/AdminUsersPage.jsx";
-import AdminUserDetailPage from "./views/pages/admin/AdminUserDetailPage.jsx";
-import AdminJobsPage from "./views/pages/admin/AdminJobsPage.jsx";
-import AdminJobDetailPage from "./views/pages/admin/AdminJobDetailPage.jsx";
-import AdminDisputesPage from "./views/pages/admin/AdminDisputesPage.jsx";
-import AdminDisputeDetailPage from "./views/pages/admin/AdminDisputeDetailPage.jsx";
-import AdminAdsPage from "./views/pages/admin/AdminAdsPage.jsx";
-import SharedProfilePage from "./views/pages/SharedProfilePage.jsx";
-import ContactPage from "./views/pages/ContactPage.jsx";
+// Feature: Landing
+import LandingPage from "./features/landing/LandingPage.jsx";
+// Feature: Auth
+import LoginPage from "./features/auth/LoginPage.jsx";
+import RegisterPage from "./features/auth/RegisterPage.jsx";
+// Feature: Jobs (customer + worker)
+import CustomerDashboardPage from "./features/jobs/CustomerDashboardPage.jsx";
+import CreateJobPage from "./features/jobs/CreateJobPage.jsx";
+import JobDetailPage from "./features/jobs/JobDetailPage.jsx";
+import WorkerFeedPage from "./features/jobs/WorkerFeedPage.jsx";
+// Feature: Profile
+import WorkerProfilePage from "./features/profile/WorkerProfilePage.jsx";
+import SharedProfilePage from "./features/profile/SharedProfilePage.jsx";
+// Feature: Wallet
+import WalletPage from "./features/wallet/WalletPage.jsx";
+// Feature: Admin
+import AdminOverviewPage from "./features/admin/AdminOverviewPage.jsx";
+import AdminUsersPage from "./features/admin/AdminUsersPage.jsx";
+import AdminUserDetailPage from "./features/admin/AdminUserDetailPage.jsx";
+import AdminJobsPage from "./features/admin/AdminJobsPage.jsx";
+import AdminJobDetailPage from "./features/admin/AdminJobDetailPage.jsx";
+import AdminDisputesPage from "./features/admin/AdminDisputesPage.jsx";
+import AdminDisputeDetailPage from "./features/admin/AdminDisputeDetailPage.jsx";
+import AdminAdsPage from "./features/admin/AdminAdsPage.jsx";
+// Feature: Support
+import ContactPage from "./features/support/ContactPage.jsx";
+// Shared views
 import NotFoundPage from "./views/pages/NotFoundPage.jsx";
 import PublicRoute from "./views/components/PublicRoute.jsx";
 

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import adminRouter from "./admin.route.js";
-import authRouter from "./auth.route.js";
-import jobRouter from "./job.route.js";
-import walletRouter from "./wallet.route.js";
-import workerRouter from "./worker.route.js";
-import uploadRouter from "./media.route.js";
+import adminRouter from "../modules/admin/admin.route.js";
+import authRouter from "../modules/auth/auth.route.js";
+import jobRouter from "../modules/job/job.route.js";
+import walletRouter from "../modules/wallet/wallet.route.js";
+import workerRouter from "../modules/worker/worker.route.js";
+import uploadRouter from "../modules/media/media.route.js";
 
 const router = Router();
 
