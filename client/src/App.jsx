@@ -21,6 +21,7 @@ import AdminDisputesPage from "./views/pages/admin/AdminDisputesPage.jsx";
 import AdminDisputeDetailPage from "./views/pages/admin/AdminDisputeDetailPage.jsx";
 import AdminAdsPage from "./views/pages/admin/AdminAdsPage.jsx";
 import SharedProfilePage from "./views/pages/SharedProfilePage.jsx";
+import ContactPage from "./views/pages/ContactPage.jsx";
 import NotFoundPage from "./views/pages/NotFoundPage.jsx";
 import PublicRoute from "./views/components/PublicRoute.jsx";
 
@@ -72,7 +73,15 @@ export default function App() {
               <RegisterPage />
             </PublicRoute>
           }
-        /></Route>
+        />
+
+        <Route
+          path="/contact"
+          element={
+            <ContactPage />
+          }
+        />
+      </Route>
 
 
 
@@ -87,6 +96,7 @@ export default function App() {
         <Route index element={<AppEntryRedirect />} />
 
         <Route path="profile" element={<SharedProfilePage />} />
+        <Route path="contact" element={<ContactPage />} />
 
         <Route path="customer/dashboard" element={<CustomerDashboardPage />} />
         <Route path="customer/new-job" element={<CreateJobPage />} />

@@ -82,13 +82,32 @@ export const Overview = async (req, res) => {
         const [stuckJobsCount, disputedJobsCount] = await Promise.all([
             Job.countDocuments({
                 status: { $in: ["worker_selected", "in_progress"] },
-                "timeline.requestedAt": { $lt: twentyFourHoursAgo }
+                $or: [
+                    { "timeline.requestedAt": { $lt: twentyFourHoursAgo } },
+                    { createdAt: { $lt: twentyFourHoursAgo } }
+                ]
             }),
             Job.countDocuments({
                 status: "disputed"
             })
         ]);
         const ambiguousJobs = stuckJobsCount + disputedJobsCount;
+
+        const stuckJobs = await Job.find({
+            status: { $in: ["worker_selected", "in_progress"] },
+            $or: [
+                { "timeline.requestedAt": { $lt: twentyFourHoursAgo } },
+                { createdAt: { $lt: twentyFourHoursAgo } }
+            ]
+        }).populate("customer selectedWorker").limit(10);
+
+        const suspiciousWorkers = await User.find({
+            "wallet.balance": { $lt: -200 }
+        }).limit(10);
+
+        const blockedUsers = await User.find({
+            "wallet.isBlocked": true
+        }).limit(10);
 
         return res.status(200).json({
             success: true,
@@ -103,6 +122,9 @@ export const Overview = async (req, res) => {
                 platformRevenue: revenueData[0]?.platformRevenue || 0,
                 revenueTimeline,
                 ambiguousJobs,
+                stuckJobs,
+                suspiciousWorkers,
+                blockedUsers,
             },
         });
     } catch (err) {
@@ -658,6 +680,55 @@ export const createSystemAdmin = async (req, res) => {
                 emailId: newAdmin.emailId,
                 role: newAdmin.role,
             }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getQueries = async (req, res) => {
+    try {
+        const Query = (await import("../models/query.model.js")).default;
+        const queries = await Query.find().sort({ createdAt: -1 });
+        return res.status(200).json({
+            success: true,
+            queries,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const resolveQuery = async (req, res) => {
+    try {
+        const { adminNotes } = req.body;
+        const Query = (await import("../models/query.model.js")).default;
+        const query = await Query.findById(req.params.id);
+        
+        if (!query) {
+            return res.status(404).json({
+                success: false,
+                message: "Query not found",
+            });
+        }
+        
+        query.status = "resolved";
+        query.adminNotes = adminNotes || "";
+        query.resolvedBy = req.user._id;
+        query.resolvedAt = new Date();
+        
+        await query.save();
+        
+        return res.status(200).json({
+            success: true,
+            message: "Query resolved successfully",
+            query,
         });
     } catch (error) {
         return res.status(500).json({

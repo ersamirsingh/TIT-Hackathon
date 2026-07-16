@@ -41,15 +41,22 @@ export default function WorkerFeedPage() {
 
   const handleLocationChange = async (coordinates) => {
     try {
-      await updateLocation({ coordinates });
+      const updatedUser = await updateLocation({ coordinates });
       toast.success("Location synced! Fetching jobs...");
+      await load(selectedRadius, updatedUser);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to sync location");
     }
   };
 
-  const load = async (radius = selectedRadius) => {
-    if (isLocationRequired) {
+  const load = async (radius = selectedRadius, overrideUser = null) => {
+    const activeUser = overrideUser || user;
+    const locRequired =
+      !activeUser?.location?.coordinates ||
+      activeUser.location.coordinates.length === 0 ||
+      (activeUser.location.coordinates[0] === 0 && activeUser.location.coordinates[1] === 0);
+
+    if (locRequired) {
       setLoading(false);
       return;
     }
@@ -81,9 +88,12 @@ export default function WorkerFeedPage() {
     }
   };
 
+  const lng = user?.location?.coordinates?.[0];
+  const lat = user?.location?.coordinates?.[1];
+
   useEffect(() => {
     load(selectedRadius);
-  }, [user?._id, selectedRadius]);
+  }, [user?._id, selectedRadius, lng, lat]);
 
   const submitInterest = async (jobId) => {
     try {

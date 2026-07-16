@@ -7,6 +7,7 @@ import {
     updateMode,
     updateProfile,
     validUser,
+    submitQuery,
 } from "../controllers/auth.controller.js";
 import authenticateUser from "../middleware/authenticate.middleware.js";
 
@@ -19,5 +20,6 @@ authRouter.get("/me", authenticateUser, validUser);
 authRouter.patch("/mode", authenticateUser, updateMode);
 authRouter.patch("/profile", authenticateUser, updateProfile);
 authRouter.patch("/location", authenticateUser, updateLocation);
+authRouter.post("/contact", submitQuery);
 
 export default authRouter;

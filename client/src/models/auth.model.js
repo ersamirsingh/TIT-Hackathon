@@ -34,3 +34,8 @@ export const updateLocationRequest = async (payload) => {
   const { data } = await apiClient.patch("/auth/location", payload);
   return data;
 };
+
+export const submitContactQueryRequest = async (payload) => {
+  const { data } = await apiClient.post("/auth/contact", payload);
+  return data;
+};

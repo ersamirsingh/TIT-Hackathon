@@ -24,6 +24,8 @@ import {
     unverifyUser,
     verifyUser,
     createSystemAdmin,
+    getQueries,
+    resolveQuery,
 } from "../controllers/admin.controller.js";
 import authenticateAdmin from "../middleware/admin.middleware.js";
 
@@ -57,5 +59,7 @@ adminRouter.post("/ads", authenticateAdmin, createAd);
 adminRouter.patch("/ads/:adId/toggle", authenticateAdmin, toggleAdStatus);
 adminRouter.post("/maintenance/run", authenticateAdmin, runMaintenance);
 adminRouter.post("/system-admin", authenticateAdmin, createSystemAdmin);
+adminRouter.get("/queries", authenticateAdmin, getQueries);
+adminRouter.patch("/queries/:id/resolve", authenticateAdmin, resolveQuery);
 
 export default adminRouter;

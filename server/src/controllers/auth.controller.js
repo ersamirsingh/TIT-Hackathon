@@ -323,3 +323,36 @@ export const updateLocation = async (req, res) => {
         user: buildPublicUser(req.user),
     });
 };
+
+export const submitQuery = async (req, res) => {
+    try {
+        const { name, email, phone, subject, message } = req.body;
+        
+        if (!name || !email || !subject || !message) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide name, email, subject, and message",
+            });
+        }
+        
+        const Query = (await import("../models/query.model.js")).default;
+        const newQuery = await Query.create({
+            name,
+            email,
+            phone: phone || "",
+            subject,
+            message,
+        });
+        
+        return res.status(201).json({
+            success: true,
+            message: "Your query has been submitted successfully!",
+            query: newQuery,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to submit query",
+        });
+    }
+};

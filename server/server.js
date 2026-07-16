@@ -9,7 +9,7 @@ import { processPendingJobsLifecycle } from "./src/utils/job.utils.js";
 const PORT = process.env.PORT || 3000;
 
 const bootstrap = async () => {
-    await Promise.all([connectToDB(), redisClient.connect()]);
+    await Promise.allSettled([connectToDB(), redisClient.connect()]);
 
     await processPendingJobsLifecycle();
     setInterval(() => {

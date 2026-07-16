@@ -177,9 +177,18 @@ export default function SharedProfilePage() {
                 label="Profile location"
                 description="Use your current browser location for faster matching."
                 value={profileForm.coordinates}
-                onChange={(coordinates) =>
-                  setProfileForm((current) => ({ ...current, coordinates }))
-                }
+                onChange={async (coordinates) => {
+                  setProfileForm((current) => ({ ...current, coordinates }));
+                  try {
+                    await updateLocation({
+                      coordinates,
+                      locationText: profileForm.locationText,
+                    });
+                    toast.success("Coordinates captured and saved to database!");
+                  } catch (err) {
+                    toast.error(err.response?.data?.message || "Failed to save coordinates");
+                  }
+                }}
               />
             </div>
           </SectionPanel>

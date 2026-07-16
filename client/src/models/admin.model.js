@@ -121,3 +121,13 @@ export const createSystemAdminRequest = async (payload) => {
   const { data } = await apiClient.post("/admin/system-admin", payload);
   return data;
 };
+
+export const getAdminQueriesRequest = async () => {
+  const { data } = await apiClient.get("/admin/queries");
+  return data;
+};
+
+export const resolveAdminQueryRequest = async (id, payload) => {
+  const { data } = await apiClient.patch(`/admin/queries/${id}/resolve`, payload);
+  return data;
+};

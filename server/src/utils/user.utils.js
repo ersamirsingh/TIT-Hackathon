@@ -56,6 +56,7 @@ export const buildPublicUser = (user) => {
         workerProfile: user.workerProfile,
         subscription: user.subscription,
         locationText: user.locationText,
+        location: user.location,
         upiId: user.upiId,
     };
 };

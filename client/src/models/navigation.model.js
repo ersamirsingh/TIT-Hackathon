@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   Wallet,
   Wrench,
+  HelpCircle,
 } from "lucide-react";
 
 export const customerNavItems = [
@@ -24,6 +25,11 @@ export const customerNavItems = [
     label: "Profile",
     to: "/app/profile",
     icon: Settings,
+  },
+  {
+    label: "Contact Support",
+    to: "/app/contact",
+    icon: HelpCircle,
   },
 ];
 
@@ -47,6 +53,11 @@ export const workerNavItems = [
     label: "Profile",
     to: "/app/profile",
     icon: Settings,
+  },
+  {
+    label: "Contact Support",
+    to: "/app/contact",
+    icon: HelpCircle,
   },
 ];
 
@@ -75,5 +86,10 @@ export const adminNavItems = [
     label: "Ads",
     to: "/app/admin/ads",
     icon: LayoutDashboard,
+  },
+  {
+    label: "Contact Support",
+    to: "/app/contact",
+    icon: HelpCircle,
   },
 ];
