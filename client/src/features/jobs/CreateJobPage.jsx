@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { createJobRequest } from "../../models/job.model.js";
+import { Sparkles } from "lucide-react";
+import { createJobRequest, aiDiagnoseJobRequest } from "../../models/job.model.js";
 import { uploadMediaRequest } from "../../models/media.model.js";
 import MotionPage from "../../views/components/MotionPage.jsx";
 import PageHeader from "../../views/components/PageHeader.jsx";
@@ -39,7 +40,57 @@ export default function CreateJobPage() {
     coordinates: null,
   });
   const [submitting, setSubmitting] = useState(false);
+  const [diagnosing, setDiagnosing] = useState(false);
   const [contextFile, setContextFile] = useState(null);
+
+  const handleAIDiagnose = async () => {
+    if (!form.description.trim()) {
+      toast.error("Please enter a description first");
+      return;
+    }
+    setDiagnosing(true);
+    try {
+      const response = await aiDiagnoseJobRequest(form.description);
+      if (response.success && response.diagnosis) {
+        const { title, category, skills, pricingModel, serviceCode, safetyInstructions } = response.diagnosis;
+        
+        let finalServiceCode = "";
+        if (pricingModel === "standard") {
+          const isValid = standardServices.some(([val]) => val === serviceCode);
+          if (isValid) {
+            finalServiceCode = serviceCode;
+          } else {
+            const fallbackService = standardServices.find(([_, __, c]) => c === category);
+            finalServiceCode = fallbackService ? fallbackService[0] : "";
+          }
+        }
+
+        setForm((current) => ({
+          ...current,
+          title: title || current.title,
+          category: category || current.category,
+          skills: Array.isArray(skills) ? skills.join(", ") : current.skills,
+          pricingModel: pricingModel || current.pricingModel,
+          serviceCode: finalServiceCode,
+        }));
+        toast.success("AI Autofilled successfully!");
+        if (safetyInstructions) {
+          toast((t) => (
+            <span className="flex flex-col gap-1">
+              <span>💡 <b>AI Safety Tip:</b></span>
+              <span className="text-xs text-base-content/85">{safetyInstructions}</span>
+            </span>
+          ), { duration: 6000 });
+        }
+      } else {
+        toast.error("AI could not diagnose the issue");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to contact AI Diagnose");
+    } finally {
+      setDiagnosing(false);
+    }
+  };
 
   const onCategoryChange = (cat) => {
     setForm((current) => {
@@ -117,7 +168,7 @@ export default function CreateJobPage() {
       toast.success(
         contextFile ? "Job created with context media" : "Job created and broadcast",
       );
-      navigate(`/app/customer/jobs/${createdJob._id}`);
+      navigate(`/app/employer/jobs/${createdJob._id}`);
     } catch (error) {
       toast.error(error.response?.data?.message || "Could not create job");
     } finally {
@@ -153,12 +204,35 @@ export default function CreateJobPage() {
           </SelectField>
 
           <div className="md:col-span-2">
-            <TextAreaField
-              label="Problem description"
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-base-content/80">Problem description</span>
+              <button
+                type="button"
+                onClick={handleAIDiagnose}
+                disabled={diagnosing || !form.description.trim()}
+                className="px-3 py-1.5 text-xs font-semibold rounded-full border border-warning/30 bg-warning/10 text-warning hover:bg-warning/20 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1.5 cursor-pointer"
+              >
+                {diagnosing ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    <span>AI Analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>AI Diagnose & Autofill</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <textarea
+              className="k-textarea w-full"
+              rows={4}
               value={form.description}
               onChange={(event) =>
                 setForm((current) => ({ ...current, description: event.target.value }))
               }
+              placeholder="Provide a detailed description of your problem. You can then click 'AI Diagnose & Autofill' to populate standard services and tags automatically."
             />
           </div>
 

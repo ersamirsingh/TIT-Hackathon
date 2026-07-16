@@ -6,6 +6,7 @@ import Query from "../../models/query.model.js";
 import { normaliseCoordinates } from "../../utils/platform.utils.js";
 import { processPendingJobsLifecycle } from "../../utils/job.utils.js";
 import bcrypt from "bcrypt";
+import { applyWalletCredit } from "../../utils/wallet.utils.js";
 
 export class AdminService {
     async getOverview() {
@@ -155,6 +156,66 @@ export class AdminService {
         if (job) {
             job.status = action === "refund" ? "cancelled" : "completed";
             await job.save();
+
+            // Resolve the 12 + 12 = 24 rupees security deposits based on admin action
+            const employerId = job.customer._id || job.customer;
+            const workerId = job.selectedWorker?._id || job.selectedWorker;
+
+            if (action === "refund") {
+                // Employer gets all (24)
+                const employer = await User.findById(employerId);
+                if (employer) {
+                    await applyWalletCredit({
+                        user: employer,
+                        amount: 24,
+                        type: "security_deposit_refund",
+                        description: "Dispute Resolved: 100% Refunded to Employer",
+                        jobId: job._id,
+                    });
+                    await employer.save();
+                }
+            } else if (action === "release") {
+                // Worker gets all (24)
+                if (workerId) {
+                    const worker = await User.findById(workerId);
+                    if (worker) {
+                        await applyWalletCredit({
+                            user: worker,
+                            amount: 24,
+                            type: "security_deposit_refund",
+                            description: "Dispute Resolved: 100% Released to Worker",
+                            jobId: job._id,
+                        });
+                        await worker.save();
+                    }
+                }
+            } else if (action === "split") {
+                // Refund 12 to both (standard split/no fault)
+                const employer = await User.findById(employerId);
+                if (employer) {
+                    await applyWalletCredit({
+                        user: employer,
+                        amount: 12,
+                        type: "security_deposit_refund",
+                        description: "Dispute Resolved: Split Refund to Employer (50%)",
+                        jobId: job._id,
+                    });
+                    await employer.save();
+                }
+                if (workerId) {
+                    const worker = await User.findById(workerId);
+                    if (worker) {
+                        await applyWalletCredit({
+                            user: worker,
+                            amount: 12,
+                            type: "security_deposit_refund",
+                            description: "Dispute Resolved: Split Refund to Worker (50%)",
+                            jobId: job._id,
+                        });
+                        await worker.save();
+                    }
+                }
+            }
         }
 
         return dispute;

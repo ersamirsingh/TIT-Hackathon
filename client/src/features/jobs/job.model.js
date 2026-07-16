@@ -64,3 +64,13 @@ export const getTrackingRequest = async (jobId) => {
   const { data } = await apiClient.get(`/job/${jobId}/tracking`);
   return data;
 };
+
+export const aiDiagnoseJobRequest = async (description) => {
+  const { data } = await apiClient.post("/ai/diagnose", { description });
+  return data;
+};
+
+export const aiMatchWorkerRequest = async (jobId, workerId) => {
+  const { data } = await apiClient.post("/ai/match", { jobId, workerId });
+  return data;
+};

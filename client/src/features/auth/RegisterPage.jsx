@@ -55,7 +55,7 @@ export default function RegisterPage() {
           ? "/app/admin/overview"
           : user.activeMode === "worker"
             ? "/app/worker/feed"
-            : "/app/customer/dashboard",
+            : "/app/employer/dashboard",
       );
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");

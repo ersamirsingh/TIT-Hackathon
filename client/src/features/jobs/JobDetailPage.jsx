@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Star,
   UserRound,
+  Sparkles,
 } from "lucide-react";
 import { useAppController } from "../../controllers/AppController.jsx";
 import {
@@ -21,6 +22,7 @@ import {
   markWorkerArrivedRequest,
   raiseDisputeRequest,
   selectWorkerRequest,
+  aiMatchWorkerRequest,
 } from "../../models/job.model.js";
 import { getJobMediaRequest, uploadMediaRequest } from "../../models/media.model.js";
 import { expressInterestRequest } from "../../models/worker.model.js";
@@ -135,6 +137,38 @@ export default function JobDetailPage() {
     voiceTranscript: "",
   });
   const [submittingInterest, setSubmittingInterest] = useState(false);
+  const [aiMatches, setAiMatches] = useState({});
+  const [loadingAiMatches, setLoadingAiMatches] = useState(false);
+
+  const fetchAiMatches = async (jobData) => {
+    if (!jobData?.applications?.length) return;
+    setLoadingAiMatches(true);
+    try {
+      const matchPromises = jobData.applications.map(async (app) => {
+        const workerId = app.worker?._id || app.worker;
+        if (!workerId) return null;
+        try {
+          const res = await aiMatchWorkerRequest(jobId, workerId);
+          return { workerId: String(workerId), score: res.matchScore, reasoning: res.reasoning };
+        } catch (err) {
+          console.error("AI Match failed for worker", workerId, err);
+          return null;
+        }
+      });
+      const results = await Promise.all(matchPromises);
+      const newMatches = {};
+      results.forEach((res) => {
+        if (res) {
+          newMatches[res.workerId] = { score: res.score, reasoning: res.reasoning };
+        }
+      });
+      setAiMatches((current) => ({ ...current, ...newMatches }));
+    } catch (e) {
+      console.error("Failed to fetch AI matches", e);
+    } finally {
+      setLoadingAiMatches(false);
+    }
+  };
 
   const isAdmin = user?.role === "admin";
   const isCustomer =
@@ -158,6 +192,7 @@ export default function JobDetailPage() {
         getTrackingRequest(jobId),
       ]);
       setJob(jobResponse.data.job);
+      fetchAiMatches(jobResponse.data.job);
       setTracking(trackingResponse.data.tracking);
       try {
         const mediaResponse = await getJobMediaRequest(jobId);
@@ -338,32 +373,82 @@ export default function JobDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-[1.6rem] border border-white/6 bg-white/3 p-5">
-            <div className="flex items-center gap-3">
-              <UserRound className="h-5 w-5 text-warning" />
-              <h3 className="text-xl text-base-100">Selected worker</h3>
-            </div>
-
-            {job.selectedWorker ? (
-              <div className="mt-5 space-y-3 text-sm leading-7 text-base-content/68">
-                <p className="text-lg text-base-100">{job.selectedWorker.Name}</p>
-                <p>{job.selectedWorker.workerProfile?.headline || "Assigned to this booking"}</p>
-                <p>Contact: {job.selectedWorker.contact || "Not shared yet"}</p>
-                <p>
-                  Rating: {Number(job.selectedWorker.rating || 0).toFixed(1)} (
-                  {job.selectedWorker.ratingCount || 0} reviews)
-                </p>
-                <p>
-                  Status:{" "}
-                  <span className="text-base-100">{job.status.replaceAll("_", " ")}</span>
-                </p>
+          {user?.activeMode === "worker" ? (
+            <div className="rounded-[1.6rem] border border-white/6 bg-white/3 p-5">
+              <div className="flex items-center gap-3">
+                <UserRound className="h-5 w-5 text-warning" />
+                <h3 className="text-xl text-base-100">Customer / Employer</h3>
               </div>
-            ) : (
-              <p className="mt-5 text-sm leading-7 text-base-content/60">
-                No worker has been assigned yet. Choose one from the interested worker list below.
-              </p>
-            )}
-          </div>
+
+              {job.customer ? (
+                <div className="mt-5 space-y-3 text-sm leading-7 text-base-content/68">
+                  <p className="text-lg text-base-100">{job.customer.Name || "Customer"}</p>
+                  <p className="flex items-center gap-1.5 text-sm">
+                    <Star className="h-4 w-4 text-warning" />
+                    <span className="text-base-100 font-semibold">
+                      {Number(job.customer.rating || 0).toFixed(1)}
+                    </span>
+                    <span className="text-base-content/60">
+                      ({job.customer.ratingCount || 0} reviews)
+                    </span>
+                  </p>
+                  
+                  {isWorker ? (
+                    <p className="text-sm">
+                      Contact: <span className="text-base-100 font-medium">{job.customer.contact || "Not provided"}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-base-content/50 italic">
+                      Contact details are unlocked once you are hired for this job.
+                    </p>
+                  )}
+                  
+                  <div className="pt-1">
+                    {job.customer.verified ? (
+                      <span className="status-chip bg-success/10 border-success/30 text-success">
+                        Verified Customer
+                      </span>
+                    ) : (
+                      <span className="status-chip">
+                        Standard Account
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-5 text-sm leading-7 text-base-content/60">
+                  Customer details are unavailable.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-[1.6rem] border border-white/6 bg-white/3 p-5">
+              <div className="flex items-center gap-3">
+                <UserRound className="h-5 w-5 text-warning" />
+                <h3 className="text-xl text-base-100">Selected worker</h3>
+              </div>
+
+              {job.selectedWorker ? (
+                <div className="mt-5 space-y-3 text-sm leading-7 text-base-content/68">
+                  <p className="text-lg text-base-100">{job.selectedWorker.Name}</p>
+                  <p>{job.selectedWorker.workerProfile?.headline || "Assigned to this booking"}</p>
+                  <p>Contact: {job.selectedWorker.contact || "Not shared yet"}</p>
+                  <p>
+                    Rating: {Number(job.selectedWorker.rating || 0).toFixed(1)} (
+                    {job.selectedWorker.ratingCount || 0} reviews)
+                  </p>
+                  <p>
+                    Status:{" "}
+                    <span className="text-base-100">{job.status.replaceAll("_", " ")}</span>
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-5 text-sm leading-7 text-base-content/60">
+                  No worker has been assigned yet. Choose one from the interested worker list below.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </SectionPanel>
 
@@ -499,7 +584,7 @@ export default function JobDetailPage() {
       </SectionPanel>
 
       {/* ── Nearby workers (customer / admin) ── */}
-      {(isCustomer || isAdmin) && matches.length ? (
+      {(isCustomer || isAdmin) && user?.activeMode !== "worker" && matches.length ? (
         <SectionPanel>
           <p className="section-label">Nearby workers</p>
           <h2 className="mt-2 text-2xl text-base-100">
@@ -539,7 +624,7 @@ export default function JobDetailPage() {
       ) : null}
 
       {/* ── Applications (customer / admin) ── */}
-      {(isCustomer || isAdmin) && applications.length ? (
+      {(isCustomer || isAdmin) && user?.activeMode !== "worker" && applications.length ? (
         <SectionPanel>
           <p className="section-label">Applications</p>
           <h2 className="mt-2 text-2xl text-base-100">
@@ -574,6 +659,24 @@ export default function JobDetailPage() {
                             <span className="status-chip">Boosted</span>
                           ) : null}
                           {isAssignedWorker ? <span className="status-chip">Assigned</span> : null}
+
+                          {aiMatches[applicationWorkerId] ? (
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1 ${
+                              aiMatches[applicationWorkerId].score >= 80 
+                                ? "bg-success/10 border-success/30 text-success" 
+                                : aiMatches[applicationWorkerId].score >= 50 
+                                  ? "bg-warning/10 border-warning/30 text-warning" 
+                                  : "bg-error/10 border-error/30 text-error"
+                            }`}>
+                              <Sparkles className="h-3 w-3" />
+                              <span>AI: {aiMatches[applicationWorkerId].score}% Match</span>
+                            </span>
+                          ) : loadingAiMatches ? (
+                            <span className="text-xs text-base-content/40 flex items-center gap-1 animate-pulse">
+                              <Sparkles className="h-3 w-3 animate-spin text-warning" />
+                              <span>AI Matching...</span>
+                            </span>
+                          ) : null}
                         </div>
                         <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-base-content/60">
                           <span className="inline-flex items-center gap-1.5">
@@ -593,6 +696,15 @@ export default function JobDetailPage() {
                           <p className="mt-2 text-sm text-base-content/55">
                             Voice: {application.voiceInput.transcript}
                           </p>
+                        ) : null}
+                        {aiMatches[applicationWorkerId]?.reasoning ? (
+                          <div className="mt-3 rounded-2xl border border-white/6 bg-white/2 p-3 text-xs leading-5 text-left">
+                            <p className="font-semibold text-warning flex items-center gap-1 mb-1">
+                              <Sparkles className="h-3.5 w-3.5" />
+                              <span>AI Recommendation Insights:</span>
+                            </p>
+                            <p className="text-base-content/75">{aiMatches[applicationWorkerId].reasoning}</p>
+                          </div>
                         ) : null}
                       </div>
                       <div className="space-y-3 text-right text-sm text-base-content/60 md:min-w-[220px]">

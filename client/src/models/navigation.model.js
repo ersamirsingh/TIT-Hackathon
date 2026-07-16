@@ -12,14 +12,19 @@ import {
 
 export const customerNavItems = [
   {
-    label: "Customer Desk",
-    to: "/app/customer/dashboard",
+    label: "Employer Desk",
+    to: "/app/employer/dashboard",
     icon: LayoutDashboard,
   },
   {
     label: "Post a Job",
-    to: "/app/customer/new-job",
+    to: "/app/employer/new-job",
     icon: BriefcaseBusiness,
+  },
+  {
+    label: "Wallet",
+    to: "/app/employer/wallet",
+    icon: Wallet,
   },
   {
     label: "Profile",
@@ -38,6 +43,11 @@ export const workerNavItems = [
     label: "Explore Jobs",
     to: "/app/worker/feed",
     icon: Home,
+  },
+  {
+    label: "My Work",
+    to: "/app/worker/work",
+    icon: BriefcaseBusiness,
   },
   {
     label: "Worker Profile",

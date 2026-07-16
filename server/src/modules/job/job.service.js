@@ -62,6 +62,7 @@ export class JobService {
         if (getNormalizedRole(user.role) === "admin" || getNormalizedRole(user.role) === "system_admin") return true;
         if (isSameEntity(job.customer, user._id)) return true;
         if (isSameEntity(job.selectedWorker, user._id)) return true;
+        if (job.status === "broadcasting") return true;
         return job.applications?.some((application) => isSameEntity(application.worker, user._id));
     }
 
@@ -248,12 +249,25 @@ export class JobService {
         const targetWorker = await User.findById(workerId);
         if (!targetWorker) throw new Error("Selected worker not found");
 
-        const securityDeposit = PLATFORM_CONFIG.securityDeposit || 50;
-        if (targetWorker.wallet.balance < -200 + securityDeposit) {
-            throw new Error("Worker wallet balance is below credit limit to accept this job");
-        }
+        // Deduct 12 rupees from worker
+        await applyWalletDebit({
+            user: targetWorker,
+            amount: 12,
+            type: "security_deposit_hold",
+            description: "Karigar Assignment Hold (₹12)",
+            jobId: job._id,
+        });
+        await targetWorker.save();
 
-        await applyWalletDebit(targetWorker, securityDeposit, "Escrow Security Deposit for Job Selection", job._id);
+        // Deduct 12 rupees from employer
+        await applyWalletDebit({
+            user: user,
+            amount: 12,
+            type: "security_deposit_hold",
+            description: "Employer Hiring Hold (₹12)",
+            jobId: job._id,
+        });
+        await user.save();
 
         job.selectedWorker = targetWorker._id;
         job.status = "worker_selected";
@@ -329,11 +343,54 @@ export class JobService {
         const worker = await User.findById(job.selectedWorker._id);
         if (!worker) throw new Error("Assigned worker not found");
 
-        const securityDeposit = PLATFORM_CONFIG.securityDeposit || 50;
-        await applyWalletCredit(worker, securityDeposit, "Escrow Security Deposit Refund on Completion", job._id);
+        // Refund 12 rupees to worker
+        await applyWalletCredit({
+            user: worker,
+            amount: 12,
+            type: "security_deposit_refund",
+            description: "Karigar Assignment Security Deposit Refund",
+            jobId: job._id,
+        });
+        await worker.save();
+
+        // Refund 12 rupees to employer
+        const customerUser = await User.findById(job.customer._id || job.customer);
+        if (customerUser) {
+            await applyWalletCredit({
+                user: customerUser,
+                amount: 12,
+                type: "security_deposit_refund",
+                description: "Employer Hiring Security Deposit Refund",
+                jobId: job._id,
+            });
+            await customerUser.save();
+        }
 
         if (job.pricing?.workerPayoutEstimate > 0) {
-            await applyWalletCredit(worker, job.pricing.workerPayoutEstimate, "Payout for job completion", job._id);
+            await applyWalletCredit({
+                user: worker,
+                amount: job.pricing.workerPayoutEstimate,
+                type: "security_deposit_payout",
+                description: "Payout for job completion",
+                jobId: job._id,
+            });
+            await worker.save();
+        }
+
+        // Credit 16% commission to system admin
+        const systemAdmin = await User.findOne({ role: { $in: ["admin", "system_admin"] } });
+        const jobAmount = job.pricing?.totalUserPayable || job.wage || 0;
+        const platformCommission = Math.round(jobAmount * 0.16);
+
+        if (systemAdmin && platformCommission > 0) {
+            await applyWalletCredit({
+                user: systemAdmin,
+                amount: platformCommission,
+                type: "platform_commission",
+                description: `16% Platform Commission for Job Completion: ${job.title}`,
+                jobId: job._id,
+            });
+            await systemAdmin.save();
         }
 
         if (rating !== undefined) {

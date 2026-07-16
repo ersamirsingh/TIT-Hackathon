@@ -13,6 +13,7 @@ import CustomerDashboardPage from "./features/jobs/CustomerDashboardPage.jsx";
 import CreateJobPage from "./features/jobs/CreateJobPage.jsx";
 import JobDetailPage from "./features/jobs/JobDetailPage.jsx";
 import WorkerFeedPage from "./features/jobs/WorkerFeedPage.jsx";
+import WorkerJobsPage from "./features/jobs/WorkerJobsPage.jsx";
 // Feature: Profile
 import WorkerProfilePage from "./features/profile/WorkerProfilePage.jsx";
 import SharedProfilePage from "./features/profile/SharedProfilePage.jsx";
@@ -48,7 +49,7 @@ function AppEntryRedirect() {
     return <Navigate to="/app/worker/feed" replace />;
   }
 
-  return <Navigate to="/app/customer/dashboard" replace />;
+  return <Navigate to="/app/employer/dashboard" replace />;
 }
 
 export default function App() {
@@ -106,11 +107,13 @@ export default function App() {
         <Route path="profile" element={<SharedProfilePage />} />
         <Route path="contact" element={<ContactPage />} />
 
-        <Route path="customer/dashboard" element={<CustomerDashboardPage />} />
-        <Route path="customer/new-job" element={<CreateJobPage />} />
-        <Route path="customer/jobs/:jobId" element={<JobDetailPage />} />
+        <Route path="employer/dashboard" element={<CustomerDashboardPage />} />
+        <Route path="employer/new-job" element={<CreateJobPage />} />
+        <Route path="employer/wallet" element={<WalletPage />} />
+        <Route path="employer/jobs/:jobId" element={<JobDetailPage />} />
 
         <Route path="worker/feed" element={<WorkerFeedPage />} />
+        <Route path="worker/work" element={<WorkerJobsPage />} />
         <Route path="worker/profile" element={<WorkerProfilePage />} />
         <Route path="worker/wallet" element={<WalletPage />} />
         <Route path="worker/jobs/:jobId" element={<JobDetailPage />} />

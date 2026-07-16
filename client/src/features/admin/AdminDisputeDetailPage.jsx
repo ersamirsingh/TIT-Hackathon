@@ -19,6 +19,7 @@ export default function AdminDisputeDetailPage() {
   const [mediators, setMediators] = useState([]);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const [selectedMediator, setSelectedMediator] = useState("");
+  const [action, setAction] = useState("refund");
 
   const load = async () => {
     try {
@@ -92,6 +93,18 @@ export default function AdminDisputeDetailPage() {
               </button>
             </div>
             <div className="surface-divider pt-5">
+              <label className="text-xs uppercase tracking-[0.16em] text-base-content/45 block mb-2 font-medium">
+                Resolution Action (Deposit Distribution)
+              </label>
+              <select
+                className="k-select w-full mb-4"
+                value={action}
+                onChange={(event) => setAction(event.target.value)}
+              >
+                <option value="refund">Refund to Employer (Employer gets ₹24)</option>
+                <option value="release">Release to Worker (Worker gets ₹24)</option>
+                <option value="split">Split 50/50 (Both get ₹12 refund)</option>
+              </select>
               <InputField
                 label="Resolution notes"
                 value={resolutionNotes}
@@ -101,7 +114,7 @@ export default function AdminDisputeDetailPage() {
                 className="k-btn mt-4"
                 onClick={async () => {
                   try {
-                    await resolveDisputeRequest(disputeId, { resolutionNotes });
+                    await resolveDisputeRequest(disputeId, { action, notes: resolutionNotes });
                     toast.success("Dispute resolved");
                     await load();
                   } catch (error) {

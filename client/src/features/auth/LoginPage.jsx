@@ -25,7 +25,7 @@ export default function LoginPage() {
           ? "/app/admin/overview"
           : user.activeMode === "worker"
             ? "/app/worker/feed"
-            : "/app/customer/dashboard");
+            : "/app/employer/dashboard");
       navigate(nextPath, { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");

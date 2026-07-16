@@ -92,8 +92,8 @@ export default function WalletPage() {
     <MotionPage className="space-y-8">
       <PageHeader
         eyebrow="Wallet"
-        title="Keep your lead engine funded"
-        description="Monitor the negative wallet balance, see debits and auto-refunds, and recharge through UPI before you hit the platform credit wall."
+        title="Your Global Wallet Dashboard"
+        description="Monitor your wallet balance, check holds and refunds, track transaction records, and recharge your funds."
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -208,7 +208,7 @@ export default function WalletPage() {
           ) : (
             <EmptyState
               title="No wallet activity yet"
-              copy="Lead fees, refunds, boosts, subscriptions, and UPI top-ups will appear here."
+              copy="Charges, holds, refunds, and top-ups will appear here."
             />
           )}
         </SectionPanel>

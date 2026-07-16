@@ -341,79 +341,14 @@ export default function WorkerFeedPage() {
           <span className="loading loading-ring loading-lg text-warning" />
         </div>
       ) : filteredJobs.length ? (
-        <div className="grid gap-6">
-          {filteredJobs.map((job) => {
-            const draft = drafts[job._id] || {};
-            return (
-              <SectionPanel key={job._id}>
-                <JobCard job={job} href={`/app/worker/jobs/${job._id}`} />
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <TextAreaField
-                    label="Message to customer"
-                    value={draft.message || ""}
-                    onChange={(event) =>
-                      setDrafts((current) => ({
-                        ...current,
-                        [job._id]: { ...draft, message: event.target.value },
-                      }))
-                    }
-                  />
-                  <div className="space-y-4">
-                    <InputField
-                      label="Quote amount"
-                      value={draft.quoteAmount || ""}
-                      onChange={(event) =>
-                        setDrafts((current) => ({
-                          ...current,
-                          [job._id]: { ...draft, quoteAmount: event.target.value },
-                        }))
-                      }
-                    />
-                    <InputField
-                      label="Quote note"
-                      value={draft.quoteText || ""}
-                      onChange={(event) =>
-                        setDrafts((current) => ({
-                          ...current,
-                          [job._id]: { ...draft, quoteText: event.target.value },
-                        }))
-                      }
-                    />
-                    <VoiceComposerField
-                      label="Voice transcript"
-                      value={draft.voiceTranscript || ""}
-                      language={user?.preferredLanguage || "Hindi"}
-                      onChange={(value) =>
-                        setDrafts((current) => ({
-                          ...current,
-                          [job._id]: { ...draft, voiceTranscript: value },
-                        }))
-                      }
-                    />
-                    <label className="flex items-center justify-between rounded-[1.25rem] border border-white/6 bg-white/3 px-4 py-3">
-                      <span className="text-sm text-base-content/70">
-                        Boost profile for ₹10
-                      </span>
-                      <input
-                        checked={Boolean(draft.boostProfile)}
-                        className="toggle toggle-warning"
-                        type="checkbox"
-                        onChange={(event) =>
-                          setDrafts((current) => ({
-                            ...current,
-                            [job._id]: { ...draft, boostProfile: event.target.checked },
-                          }))
-                        }
-                      />
-                    </label>
-                    <button className="k-btn" onClick={() => submitInterest(job._id)}>
-                      Send interest
-                    </button>
-                  </div>
-                </div>
-              </SectionPanel>
-            );
-          })}
+        <div className="grid gap-6 md:grid-cols-2">
+          {filteredJobs.map((job) => (
+            <JobCard 
+              key={job._id} 
+              job={job} 
+              href={`/app/worker/jobs/${job._id}`} 
+            />
+          ))}
         </div>
       ) : (
         <EmptyState

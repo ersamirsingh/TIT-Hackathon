@@ -16,7 +16,7 @@ export default function PublicRoute({ children }) {
          return <Navigate to="/app/worker/feed" replace />;
       }
 
-      return <Navigate to="/app/customer/dashboard" replace />;
+      return <Navigate to="/app/employer/dashboard" replace />;
    }
 
    return children;

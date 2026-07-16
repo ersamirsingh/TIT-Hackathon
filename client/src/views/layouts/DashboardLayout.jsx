@@ -47,7 +47,7 @@ export default function DashboardLayout() {
 
     const nextMode = user.activeMode === "worker" ? "customer" : "worker";
     await updateMode(nextMode);
-    navigate(nextMode === "worker" ? "/app/worker/feed" : "/app/customer/dashboard");
+    navigate(nextMode === "worker" ? "/app/worker/feed" : "/app/employer/dashboard");
   };
 
   return (
