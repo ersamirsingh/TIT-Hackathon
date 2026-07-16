@@ -95,8 +95,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-base-content/40">Call Us</p>
-                  <a href="tel:7979-79272" className="text-sm font-semibold text-base-100 hover:text-warning transition">
-                    7979-79272
+                  <a href="tel:7979079272" className="text-sm font-semibold text-base-100 hover:text-warning transition">
+                    7979079272
                   </a>
                 </div>
               </div>

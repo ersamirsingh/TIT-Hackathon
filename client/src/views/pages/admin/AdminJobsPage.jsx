@@ -55,22 +55,22 @@ export default function AdminJobsPage() {
                   <td>{job.customer?.Name || "Unknown"}</td>
                   <td>{job.selectedWorker?.Name || "Unassigned"}</td>
                   <td>{formatCurrency(job.pricing?.totalUserPayable || job.wage || 0)}</td>
-                  <td>
-                    <button
-                      className="btn btn-xs"
-                      onClick={async () => {
-                        try {
-                          await deleteJobRequest(job._id);
-                          toast.success("Job deleted");
-                          await load();
-                        } catch (error) {
-                          toast.error(error.response?.data?.message || "Delete failed");
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                   <td>
+                     <button
+                       className="px-2.5 py-1 rounded-xl text-xs font-semibold border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition"
+                       onClick={async () => {
+                         try {
+                           await deleteJobRequest(job._id);
+                           toast.success("Job deleted successfully");
+                           await load();
+                         } catch (error) {
+                           toast.error(error.response?.data?.message || "Delete failed");
+                         }
+                       }}
+                     >
+                       Delete
+                     </button>
+                   </td>
                 </tr>
               ))}
             </tbody>

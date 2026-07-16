@@ -115,8 +115,8 @@ export default function DashboardLayout() {
                 <button className="k-btn-ghost w-full" onClick={handleModeSwitch}>
                   Switch to{" "}
                   {user.activeMode === "worker"
-                    ? "work as Employer"
-                    : "Work as a Karigar"}
+                    ? "Employer"
+                    : "Karigar"}
                 </button>
               ) : null}
 
@@ -142,12 +142,25 @@ export default function DashboardLayout() {
               </button>
 
               <div className="ml-auto flex items-center gap-3">
-                <span className="status-chip">
-                  {user?.role === "admin"
+                <span
+                  className={`status-chip ${
+                    user?.role === "admin" || user?.role === "system_admin"
+                      ? ""
+                      : "cursor-pointer hover:bg-white/10 transition"
+                  }`}
+                  onClick={
+                    user?.role === "admin" || user?.role === "system_admin"
+                      ? undefined
+                      : handleModeSwitch
+                  }
+                >
+                  Role: {user?.role === "admin"
                     ? "Admin"
+                    : user?.role === "system_admin"
+                    ? "System Admin"
                     : user?.activeMode === "worker"
-                    ? "Work as a Karigar"
-                    : "Find a Worker"}
+                    ? "Karigar"
+                    : "Employer"}
                 </span>
 
                 <span className="status-chip">

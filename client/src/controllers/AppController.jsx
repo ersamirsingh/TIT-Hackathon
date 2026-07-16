@@ -76,7 +76,7 @@ export function AppProvider({ children }) {
   const updateMode = async (activeMode) => {
     const response = await updateModeRequest(activeMode);
     setUser(response.user);
-    toast.success(`Switched to ${activeMode === "worker" ? "Work as a Karigar" : "Find a Worker"}`);
+    toast.success(`Switched to ${activeMode === "worker" ? "Karigar Mode" : "Employer Mode"}`);
     return response.user;
   };
 

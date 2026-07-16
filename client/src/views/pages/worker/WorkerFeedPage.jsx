@@ -24,6 +24,8 @@ const ACTIVE_WORKER_STATUSES = [
   "disputed",
 ];
 
+const DOMAINS = ["All", "Electrical", "Plumbing", "Appliance", "Cleaning", "Carpentry", "Painting", "General", "Other"];
+
 export default function WorkerFeedPage() {
   const { user, updateLocation } = useAppController();
   const [drafts, setDrafts] = useState({});
@@ -33,6 +35,7 @@ export default function WorkerFeedPage() {
   const [selectedRadius, setSelectedRadius] = useState(
     user?.workerProfile?.serviceRadiusKm || 5
   );
+  const [selectedDomain, setSelectedDomain] = useState("All");
 
   const isLocationRequired =
     !user?.location?.coordinates ||
@@ -91,6 +94,11 @@ export default function WorkerFeedPage() {
   const lng = user?.location?.coordinates?.[0];
   const lat = user?.location?.coordinates?.[1];
 
+  const filteredJobs = jobs.filter((job) => {
+    if (selectedDomain === "All") return true;
+    return job.category?.toLowerCase() === selectedDomain.toLowerCase();
+  });
+
   useEffect(() => {
     load(selectedRadius);
   }, [user?._id, selectedRadius, lng, lat]);
@@ -140,9 +148,32 @@ export default function WorkerFeedPage() {
         title="Search nearby jobs ready for your quote"
         description="Tap interested for free, boost your profile when the lead is worth it, and use Verified Pro to unlock a 10-second head start."
         actions={
-          <Link className="k-btn-ghost" to="/app/worker/profile">
-            Edit worker profile
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={async () => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                      const { longitude, latitude } = position.coords;
+                      await handleLocationChange([longitude, latitude]);
+                    },
+                    (err) => {
+                      toast.error("Location access denied or timed out");
+                    }
+                  );
+                } else {
+                  toast.error("Geolocation not supported by your browser");
+                }
+              }}
+              className="k-btn flex items-center gap-2"
+            >
+              <MapPin className="h-4 w-4" />
+              <span>Update Location</span>
+            </button>
+            <Link className="k-btn-ghost" to="/app/worker/profile">
+              Edit worker profile
+            </Link>
+          </div>
         }
       />
 
@@ -279,14 +310,39 @@ export default function WorkerFeedPage() {
         </div>
       </div>
 
+      {/* Category domain filter */}
+      <div className="flex flex-col gap-4 rounded-[1.75rem] border border-white/6 bg-white/3 p-6">
+        <div>
+          <h3 className="text-xl font-semibold text-base-100">Category / Domain Filter</h3>
+          <p className="mt-1 text-sm text-base-content/60">
+            Filter available jobs in your radius by specific domains like Carpenter, Electrical, Plumbing etc.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {DOMAINS.map((domain) => (
+            <button
+              key={domain}
+              onClick={() => setSelectedDomain(domain)}
+              className={`px-4 py-2 rounded-full text-xs font-semibold border transition ${
+                selectedDomain === domain
+                  ? "border-warning bg-warning text-black shadow-lg"
+                  : "border-white/10 bg-white/3 text-base-content/75 hover:bg-white/6 hover:text-base-100"
+              }`}
+            >
+              {domain}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Job list */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
           <span className="loading loading-ring loading-lg text-warning" />
         </div>
-      ) : jobs.length ? (
+      ) : filteredJobs.length ? (
         <div className="grid gap-6">
-          {jobs.map((job) => {
+          {filteredJobs.map((job) => {
             const draft = drafts[job._id] || {};
             return (
               <SectionPanel key={job._id}>
@@ -361,8 +417,12 @@ export default function WorkerFeedPage() {
         </div>
       ) : (
         <EmptyState
-          title="No nearby jobs right now"
-          copy="Make sure your live location and worker availability are on. New jobs in your radius will appear here."
+          title={jobs.length > 0 ? "No jobs in this category" : "No nearby jobs right now"}
+          copy={
+            jobs.length > 0
+              ? "There are nearby jobs available, but none match the selected category. Try selecting another domain or 'All'."
+              : "Make sure your live location and worker availability are on. New jobs in your radius will appear here."
+          }
         />
       )}
       </>

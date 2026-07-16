@@ -72,7 +72,11 @@ export default function AdminUsersPage() {
                   <td>
                     <div className="flex flex-wrap gap-2">
                       <button
-                        className="btn btn-xs"
+                        className={`px-2.5 py-1 rounded-xl text-xs font-semibold border transition ${
+                          entry.verified
+                            ? "border-warning bg-warning/5 text-warning/80 hover:bg-warning/15"
+                            : "border-white/10 bg-white/3 text-base-content/70 hover:bg-white/6"
+                        }`}
                         onClick={() =>
                           mutate(
                             () =>
@@ -86,7 +90,11 @@ export default function AdminUsersPage() {
                         {entry.verified ? "Unverify" : "Verify"}
                       </button>
                       <button
-                        className="btn btn-xs"
+                        className={`px-2.5 py-1 rounded-xl text-xs font-semibold border transition ${
+                          entry.isBlocked
+                            ? "border-green-500 bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                            : "border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                        }`}
                         onClick={() =>
                           mutate(
                             () =>
