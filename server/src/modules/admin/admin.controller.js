@@ -149,6 +149,12 @@ export const deleteJob = async (req, res) => {
 
 export const deleteDispute = async (req, res) => {
     try {
+        if (req.user?.role !== "system_admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized: Only System Admins can delete disputes",
+            });
+        }
         const { disputeId } = req.params;
         await adminService.deleteDispute(disputeId);
         return res.status(200).json({

@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { deleteDisputeRequest, getAdminDisputesRequest } from "../../models/admin.model.js";
+import { useAppController } from "../../controllers/AppController.jsx";
 import MotionPage from "../../views/components/MotionPage.jsx";
 import PageHeader from "../../views/components/PageHeader.jsx";
 import SectionPanel from "../../views/components/SectionPanel.jsx";
 
 export default function AdminDisputesPage() {
+  const { user } = useAppController();
   const [disputes, setDisputes] = useState([]);
 
   const load = async () => {
@@ -53,20 +55,22 @@ export default function AdminDisputesPage() {
                   <td>{dispute.raisedBy?.Name || "Unknown"}</td>
                   <td>{dispute.againstWorker?.Name || "Unknown"}</td>
                   <td>
-                    <button
-                      className="btn btn-xs"
-                      onClick={async () => {
-                        try {
-                          await deleteDisputeRequest(dispute._id);
-                          toast.success("Dispute deleted");
-                          await load();
-                        } catch (error) {
-                          toast.error(error.response?.data?.message || "Delete failed");
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
+                    {user?.role === "system_admin" && (
+                      <button
+                        className="px-2.5 py-1 rounded-xl text-xs font-semibold border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition animate-fade-in"
+                        onClick={async () => {
+                          try {
+                            await deleteDisputeRequest(dispute._id);
+                            toast.success("Dispute deleted");
+                            await load();
+                          } catch (error) {
+                            toast.error(error.response?.data?.message || "Delete failed");
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

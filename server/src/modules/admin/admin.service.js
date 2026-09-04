@@ -250,8 +250,20 @@ export class AdminService {
     }
 
     async deleteDispute(disputeId) {
-        const dispute = await Dispute.findByIdAndDelete(disputeId);
+        const dispute = await Dispute.findById(disputeId);
         if (!dispute) throw new Error("Dispute not found");
+
+        const job = await Job.findById(dispute.job);
+        if (job) {
+            job.status = "in_progress";
+            job.disputeState = {
+                isRaised: false,
+                notes: "",
+            };
+            await job.save();
+        }
+
+        await Dispute.findByIdAndDelete(disputeId);
         return dispute;
     }
 

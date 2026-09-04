@@ -45,8 +45,13 @@ if (typeof document !== "undefined") {
   }, true); // Use capture phase
 }
 
+const rawApiUrl = import.meta.env.VITE_API_URL || "/api";
+const baseURL = typeof rawApiUrl === "string" && rawApiUrl.endsWith("/") && rawApiUrl.length > 1 
+  ? rawApiUrl.slice(0, -1) 
+  : rawApiUrl;
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api",
+  baseURL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

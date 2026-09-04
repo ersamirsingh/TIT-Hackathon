@@ -10,10 +10,11 @@ import Query from "../../models/query.model.js";
 export class AuthService {
     getCookieOptions() {
         const maxAge = Number(process.env.JWT_MAX_AGE || 0);
+        const isProduction = process.env.NODE_ENV === "production";
         return {
             httpOnly: true,
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
             ...(Number.isFinite(maxAge) && maxAge > 0 ? { maxAge } : {}),
         };
     }
